@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In / Sign Up | Little Daydream</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="account-page">
+<header class="header account-header">
+  <a class="brand" href="index.html"><img src="assets/logo.jpg" alt="Little Daydream logo"><span>Little Day Dream</span></a>
+  <nav class="nav"><a href="index.html">Home</a><a href="index.html#shop">Shop</a><a href="admin.html">Admin</a></nav>
+</header>
+<main class="account-wrap">
+  <section class="account-card" aria-label="Customer account">
+    <div class="account-logo"><img src="assets/logo.jpg" alt="Little Daydream"></div>
+    <p class="account-eyebrow">WELCOME</p>
+    <h1 id="authHeading">Sign in</h1>
+    <p class="account-sub" id="authSub">Sign in to your Little Day Dream account.</p>
+    <div class="account-tabs" role="tablist">
+      <button class="active" id="signinTab" type="button" onclick="showSignIn()">Sign In</button>
+      <button id="signupTab" type="button" onclick="showSignUp()">Sign Up</button>
+    </div>
+    <form id="signinForm" class="account-form">
+      <label>Email<input id="signinEmail" type="email" required placeholder="you@example.com"></label>
+      <label>Password<input id="signinPassword" type="password" required placeholder="Password"></label>
+      <button class="account-submit" type="submit">Sign In</button>
+    </form>
+    <form id="signupForm" class="account-form" hidden>
+      <label>Full name<input id="signupName" required placeholder="Your name"></label>
+      <label>Email<input id="signupEmail" type="email" required placeholder="you@example.com"></label>
+      <label>Password<input id="signupPassword" type="password" minlength="6" required placeholder="At least 6 characters"></label>
+      <button class="account-submit" type="submit">Create Account</button>
+    </form>
+    <p class="form-message" id="authMessage"></p>
+    <p class="form-note account-note">Demo version: accounts are stored in this browser only. A real production site should use a secure server/database.</p>
+  </section>
+</main>
+<script src="auth.js"></script>
+</body>
+</html>

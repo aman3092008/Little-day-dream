@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Product | Little Daydream</title><link rel="stylesheet" href="style.css"></head>
+<body class="product-page">
+<header class="header dark-header"><a class="brand" href="index.html"><img src="assets/logo.jpg" alt="Little Daydream logo"><span>Little Daydream</span></a><button class="menu-btn" aria-label="Open menu">☰</button><nav class="nav"><a href="index.html#home">Home</a><a href="index.html#shop">Shop</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a><a href="orders.html">Orders</a><a href="auth.html" id="accountLink">Sign In / Sign Up</a><button class="cart-link" type="button" onclick="openCart()">🛍️ Cart <span id="cartCount" class="cart-count">0</span></button><a href="admin.html" class="nav-admin">Admin</a></nav></header>
+<main class="product-detail-main"><div class="product-detail-wrap" id="productDetail"></div></main>
+<div class="cart-drawer" id="cartDrawer" aria-hidden="true"><div class="cart-panel"><div class="cart-head"><div><p class="eyebrow">YOUR SHOPPING BAG</p><h2>Your Cart</h2></div><button class="close cart-close" onclick="closeCart()">×</button></div><div id="cartItems" class="cart-items"></div><div class="cart-summary"><div><span>Subtotal</span><strong id="cartSubtotal">৳ 0</strong></div><div><span>Shipping fee</span><strong id="cartShipping">৳ 60</strong></div><div class="cart-total"><span>Total</span><strong id="cartTotal">৳ 60</strong></div></div><button class="btn primary full" onclick="checkoutCart()">Proceed to Checkout</button></div></div>
+<div class="modal" id="orderModal" aria-hidden="true"><div class="modal-card"><button class="close" onclick="closeOrder()">×</button><p class="eyebrow">PLACE ORDER</p><h2 id="orderTitle">Order product</h2><form id="orderForm"><input type="hidden" id="orderProduct"><input type="hidden" id="orderCartItems"><label>Full name<input id="customerName" required placeholder="Your name"></label><label>Phone number<input id="customerPhone" required placeholder="+880..."></label><label>Delivery address<textarea id="customerAddress" required placeholder="Full delivery address"></textarea></label><label>Quantity<input id="customerQty" type="number" min="1" value="1" required></label><label>Payment method</label><div class="payment-method-grid"><button type="button" class="payment-method-btn active" data-payment="bkash"><span class="payment-logo bkash-logo">b</span><span><strong>bKash</strong><small>Mobile payment</small></span></button><button type="button" class="payment-method-btn" data-payment="nagad"><span class="payment-logo nagad-logo">N</span><span><strong>Nagad</strong><small>Mobile payment</small></span></button><button type="button" class="payment-method-btn" data-payment="cod"><span class="payment-logo cod-logo">৳</span><span><strong>Cash on Delivery</strong><small>Pay on delivery</small></span></button></div><select id="paymentMethod" aria-hidden="true" tabindex="-1" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none"><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="cod">Cash on Delivery</option></select><div id="paymentInfo" class="payment-info"><strong>bKash payment number:</strong> <span id="paymentNumber">Not set</span></div><label id="transactionWrap">Payment transaction ID<input id="paymentTransactionId" placeholder="Enter transaction ID"></label><div class="promo-codes-box">
+  <button type="button" class="promo-codes-toggle" id="promoCodesToggle" onclick="togglePromoCodes()" aria-expanded="false">
+    <span>Promo codes</span><span class="promo-enter" id="promoEnterText">Enter⌃</span>
+  </button>
+  <div class="promo-codes-content" id="promoCodesContent" hidden>
+    <p class="promo-help">Promo codes are a combination of case sensitive letters and numbers, without spaces. Please be aware that promo codes have limitation and expiration dates. You might find them no longer valid by the time you apply them due to these restrictions.</p>
+    <div class="promo-apply-row">
+      <input id="voucherCode" placeholder="Enter" autocomplete="off" aria-label="Promo code">
+      <button type="button" class="promo-apply-btn" onclick="applyVoucher()">Apply</button>
+    </div>
+    <div id="voucherMessage" class="voucher-message" aria-live="polite"></div>
+    <div class="promo-offers">
+      <div class="promo-offers-title">Available Offers</div>
+      <div id="availableOffers" class="available-offers-list"></div>
+    </div>
+    <button type="button" class="promo-remove-btn" id="voucherRemove" onclick="removeVoucher()" style="display:none">Remove applied code</button>
+  </div>
+</div>
+<div class="order-summary"><div><span>Product price</span><strong id="orderPrice">৳ 0</strong></div><div><span>Shipping fee</span><strong id="orderShipping">৳ 60</strong></div><div class="order-total"><span>Total</span><strong id="orderTotal">৳ 60</strong></div></div><button class="btn primary full" type="submit">Confirm Order</button></form><p class="form-note">Orders appear in Admin → Orders on this device.</p></div></div>
+<script src="script.js"></script><script src="product.js"></script>
+</body></html>

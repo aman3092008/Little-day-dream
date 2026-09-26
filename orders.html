@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Orders — Little Daydream</title><link rel="stylesheet" href="style.css">
+</head>
+<body class="orders-page">
+<header class="header dark-header">
+  <a class="brand" href="index.html"><img src="assets/logo.jpg" alt="Little Daydream logo"><span>Little Daydream</span></a>
+  <button class="menu-btn" aria-label="Open menu">☰</button>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="index.html#shop">Shop</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#contact">Contact</a>
+    <a href="orders.html" class="nav-orders active">Orders</a>
+    <a href="auth.html" class="nav-account">Sign In / Sign Up</a>
+    <a class="cart-link" href="index.html#shop" aria-label="Open shopping cart">🛍️ Cart <span id="cartCount" class="cart-count">0</span></a>
+    <a href="admin.html" class="nav-admin">Admin</a>
+  </nav>
+</header>
+
+<main class="orders-main">
+<section class="orders-hero"><p class="gold-eyebrow">YOUR LITTLE DAYDREAM</p><h1>My Orders</h1><p>Keep track of your purchases, delivery details, and order status — all in one beautiful place.</p></section>
+<section class="orders-content container-wide">
+<div class="orders-top"><div><span class="orders-label">ORDER HISTORY</span><h2 id="ordersTitle">Your recent orders</h2></div><a class="soft-btn" href="index.html#shop">Continue Shopping</a></div>
+<div class="orders-search-wrap">
+  <div class="orders-search-icon">⌕</div>
+  <input id="orderSearch" class="orders-search" type="search" placeholder="Search your orders..." autocomplete="off">
+  <button id="clearOrderSearch" class="search-clear" type="button" aria-label="Clear search">×</button>
+</div>
+<p class="orders-intro" id="intro">Your recent Little Daydream orders.</p>
+<div id="ordersList"></div>
+</section>
+</main>
+
+<div class="details-modal" id="detailsModal" aria-hidden="true"><div class="details-backdrop" onclick="closeDetails()"></div><div class="details-card"><button class="details-close" onclick="closeDetails()">×</button><p class="gold-eyebrow">ORDER DETAILS</p><h2 id="detailId">Order</h2><div id="detailBody"></div></div></div>
+
+
+<script>
+(function(){
+  try {
+    const cart=JSON.parse(localStorage.getItem('ld_cart')||'[]');
+    const count=cart.reduce((s,i)=>s+Number(i.qty||0),0);
+    const el=document.getElementById('cartCount'); if(el) el.textContent=count;
+  } catch(e){}
+  const btn=document.querySelector('.menu-btn'), nav=document.querySelector('.nav');
+  if(btn&&nav) btn.addEventListener('click',()=>nav.classList.toggle('open'));
+})();
+</script>
+<script>
+const money=n=>'৳ '+Number(n||0).toLocaleString('en-BD');
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+const current=JSON.parse(localStorage.getItem('ld_current_user')||'null');
+const all=JSON.parse(localStorage.getItem('ld_orders')||'[]');
+const list=document.getElementById('ordersList');
+if(!current){
+ document.getElementById('intro').textContent='Please sign in to view your private order history.';
+ list.innerHTML='<div class="empty-orders"><div class="empty-icon">♡</div><h3>Sign in to see your orders</h3><p>Your orders are securely connected to your customer account on this device.</p><a class="gold-button" href="auth.html">Sign In / Sign Up</a></div>';
+}else{
+ const orders=all.filter(o=>o.account===current.email || (!o.account && o.customer===current.name));
+ window.customerOrders=orders;
+ document.getElementById('ordersTitle').textContent=orders.length?`${current.name}'s orders`:'Your first order is waiting';
+ document.getElementById('intro').textContent=orders.length?`${orders.length} order${orders.length===1?'':'s'} placed with Little Daydream`:'You have no confirmed orders yet.';
+ const search=document.getElementById('orderSearch'), clear=document.getElementById('clearOrderSearch');
+ function renderOrders(query=''){
+   const q=query.trim().toLowerCase();
+   const filtered=orders.map((o,idx)=>({o,idx})).filter(({o})=>{
+     if(!q)return true;
+     const items=Array.isArray(o.items)?o.items:[];
+     const hay=[o.id,o.status,o.phone,o.customer,o.address,o.product,...items.map(x=>x.name),new Date(o.date).toLocaleString()].join(' ').toLowerCase();
+     return hay.includes(q);
+   });
+   if(!orders.length){list.innerHTML='<div class="empty-orders"><div class="empty-icon">✦</div><h3>No orders yet</h3><p>Discover something beautiful and your confirmed orders will appear here.</p><a class="gold-button" href="index.html#shop">Explore the Shop</a></div>'; return;}
+   if(!filtered.length){list.innerHTML='<div class="empty-orders search-empty"><div class="empty-icon">⌕</div><h3>No matching orders</h3><p>Try searching by order ID, product name, status, phone, or date.</p></div>'; return;}
+   list.innerHTML=filtered.slice().reverse().map(({o,idx})=>{
+     const items=Array.isArray(o.items)&&o.items.length?o.items:[{name:o.product,qty:o.qty,unitPrice:o.unitPrice,lineTotal:(Number(o.total||0)-Number(o.shippingFee||0))}];
+     const status=(o.status||'New');
+     const statusClass=status.toLowerCase().replace(/\s+/g,'-');
+     return `<article class="aesthetic-order-card">
+        <div class="order-card-top"><div><span class="order-number">${esc(o.id)}</span><p class="order-date">${new Date(o.date).toLocaleString()} · ${esc(o.phone||'')}</p></div><span class="pretty-status ${esc(statusClass)}">${esc(status)}</span></div>
+        <div class="order-items">${items.map(x=>`<div class="pretty-line"><div><strong>${esc(x.name)}</strong><span>Quantity ${Number(x.qty||1)}</span></div><strong>${money(x.lineTotal||Number(x.unitPrice||0)*Number(x.qty||1))}</strong></div>`).join('')}</div>
+        <div class="order-bottom"><div class="total-stack"><span>Shipping ${money(o.shippingFee)}${o.voucherCode?` · Voucher ${esc(o.voucherCode)}`:''}</span><strong>Total ${money(o.total)}</strong></div><button class="detail-btn pretty-detail" onclick="showDetails(${idx})">View order details <span>→</span></button></div>
+     </article>`;
+   }).join('');
+ }
+ renderOrders();
+ search.addEventListener('input',()=>renderOrders(search.value));
+ clear.addEventListener('click',()=>{search.value='';renderOrders();search.focus();});
+}
+function showDetails(i){
+ const o=window.customerOrders[i]; if(!o)return;
+ document.getElementById('detailId').textContent=o.id;
+ const items=Array.isArray(o.items)&&o.items.length?o.items:[{name:o.product,qty:o.qty,unitPrice:o.unitPrice,lineTotal:(Number(o.total||0)-Number(o.shippingFee||0))}];
+ document.getElementById('detailBody').innerHTML=`<div class="detail-grid"><div><span>STATUS</span><strong>${esc(o.status||'New')}</strong></div><div><span>DATE</span><strong>${new Date(o.date).toLocaleString()}</strong></div><div><span>FULL NAME</span><strong>${esc(o.customer||'')}</strong></div><div><span>VOUCHER</span><strong>${esc(o.voucherCode||'—')} ${o.voucherDiscount?`(− ${money(o.voucherDiscount)})`:''}</strong></div><div><span>PHONE</span><strong>${esc(o.phone||'')}</strong></div><div class="detail-wide"><span>DELIVERY ADDRESS</span><strong>${esc(o.address||'')}</strong></div></div><div class="detail-items"><h3>Items</h3>${items.map(x=>`<div><span>${esc(x.name)} × ${Number(x.qty||1)}</span><strong>${money(x.lineTotal||Number(x.unitPrice||0)*Number(x.qty||1))}</strong></div>`).join('')}<div><span>Shipping</span><strong>${money(o.shippingFee)}</strong></div><div class="detail-total"><span>Total</span><strong>${money(o.total)}</strong></div></div>`;
+ document.getElementById('detailsModal').classList.add('show');document.getElementById('detailsModal').setAttribute('aria-hidden','false');
+}
+function closeDetails(){document.getElementById('detailsModal').classList.remove('show');document.getElementById('detailsModal').setAttribute('aria-hidden','true')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetails()});
+</script>
+</body></html>
